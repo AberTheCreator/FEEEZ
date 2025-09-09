@@ -1,5 +1,5 @@
 import React from 'react';
-import './WalletConnection.css';
+import '../App.css';
 
 const WalletConnection = ({ onConnect }) => {
   return (
