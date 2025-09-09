@@ -106,7 +106,6 @@ body {
   overflow-y: auto;
 }
 
-/* Wallet Connect */
 .wallet-connect {
   display: flex;
   justify-content: center;
@@ -251,7 +250,7 @@ body {
   font-size: 0.9rem;
 }
 
-/* NFT Rewards */
+
 .nft-rewards {
   padding: 1rem;
 }
