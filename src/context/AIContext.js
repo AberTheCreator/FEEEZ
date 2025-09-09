@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { aiService } from '../services/aiService';
-import { useBills, useNFTRewards } from '../hooks';
+import { useBills } from '../hooks/useBills';
+import { useNFTRewards } from '../hooks/useNFTRewards';
 
 const AIContext = createContext();
 
