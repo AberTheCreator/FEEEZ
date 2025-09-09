@@ -222,7 +222,6 @@ contract BillPayment is ReentrancyGuard, Ownable {
         uint256[] memory myBills = userBills[msg.sender];
         uint256 dueCount = 0;
         
-        // Count due bills
         for (uint256 i = 0; i < myBills.length; i++) {
             Bill memory bill = bills[myBills[i]];
             if (bill.status == BillStatus.Active && 
@@ -232,7 +231,6 @@ contract BillPayment is ReentrancyGuard, Ownable {
             }
         }
         
-        // Create array with due bills
         dueBills = new uint256[](dueCount);
         uint256 index = 0;
         
