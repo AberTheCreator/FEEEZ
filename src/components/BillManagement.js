@@ -4,7 +4,6 @@ import { useWeb3 } from '../context/Web3Context';
 import BillPaymentABI from '../contracts/BillPayment.json';
 import MockUSDCABI from '../contracts/MockUSDC.json';
 
-
 const BillManagement = () => {
   const { provider, signer, account, contractAddresses } = useWeb3();
   const [bills, setBills] = useState([]);
