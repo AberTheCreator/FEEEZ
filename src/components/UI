@@ -1,0 +1,127 @@
+import React from 'react';
+
+export const Button = ({ 
+  children, 
+  variant = 'primary', 
+  size = 'medium', 
+  disabled = false, 
+  loading = false,
+  onClick,
+  className = '',
+  ...props 
+}) => {
+  const baseClasses = 'font-semibold rounded-lg transition-all duration-300 border-none cursor-pointer';
+  
+  const variants = {
+    primary: 'bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:shadow-lg hover:-translate-y-0.5',
+    secondary: 'bg-gray-100 text-gray-700 hover:bg-gray-200',
+    success: 'bg-green-500 text-white hover:bg-green-600',
+    danger: 'bg-red-500 text-white hover:bg-red-600'
+  };
+  
+  const sizes = {
+    small: 'px-3 py-1.5 text-sm',
+    medium: 'px-4 py-2',
+    large: 'px-6 py-3 text-lg'
+  };
+  
+  const classes = `${baseClasses} ${variants[variant]} ${sizes[size]} ${disabled || loading ? 'opacity-60 cursor-not-allowed transform-none' : ''} ${className}`;
+  
+  return (
+    <button 
+      className={classes} 
+      onClick={!disabled && !loading ? onClick : undefined}
+      disabled={disabled || loading}
+      {...props}
+    >
+      {loading && <span className="loading-spinner" style={{ width: '16px', height: '16px', marginRight: '8px' }}></span>}
+      {children}
+    </button>
+  );
+};
+
+export const Card = ({ children, className = '', ...props }) => {
+  return (
+    <div 
+      className={`bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 ${className}`}
+      {...props}
+    >
+      {children}
+    </div>
+  );
+};
+
+export const Modal = ({ isOpen, onClose, title, children, footer }) => {
+  if (!isOpen) return null;
+  
+  return (
+    <div className="modal-overlay" onClick={onClose}>
+      <div className="modal-content" onClick={e => e.stopPropagation()}>
+        <div className="modal-header">
+          <h3>{title}</h3>
+          <button className="close-button" onClick={onClose}>×</button>
+        </div>
+        <div className="modal-body">
+          {children}
+        </div>
+        {footer && (
+          <div className="modal-footer">
+            {footer}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export const LoadingSpinner = ({ size = 'medium', color = '#667eea' }) => {
+  const sizes = {
+    small: '20px',
+    medium: '40px',
+    large: '60px'
+  };
+  
+  return (
+    <div 
+      className="loading-spinner" 
+      style={{ 
+        width: sizes[size], 
+        height: sizes[size],
+        borderTopColor: color
+      }}
+    ></div>
+  );
+};
+
+export const Input = ({ label, error, className = '', ...props }) => {
+  return (
+    <div className="form-group">
+      {label && <label>{label}</label>}
+      <input 
+        className={`${className} ${error ? 'border-red-500' : ''}`}
+        {...props} 
+      />
+      {error && <span style={{ color: '#dc2626', fontSize: '0.8rem', marginTop: '0.25rem', display: 'block' }}>{error}</span>}
+    </div>
+  );
+};
+
+export const Select = ({ label, options, error, className = '', ...props }) => {
+  return (
+    <div className="form-group">
+      {label && <label>{label}</label>}
+      <select 
+        className={`${className} ${error ? 'border-red-500' : ''}`}
+        style={{ width: '100%', padding: '0.75rem', border: '1px solid #d1d5db', borderRadius: '8px', fontSize: '1rem' }}
+        {...props}
+      >
+        {options.map(option => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+      {error && <span style={{ color: '#dc2626', fontSize: '0.8rem', marginTop: '0.25rem', display: 'block' }}>{error}</span>}
+    </div>
+  );
+};
