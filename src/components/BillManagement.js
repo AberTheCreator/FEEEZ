@@ -3,7 +3,7 @@ import { ethers } from 'ethers';
 import { useWeb3 } from '../context/Web3Context';
 import BillPaymentABI from '../contracts/BillPayment.json';
 import MockUSDCABI from '../contracts/MockUSDC.json';
-import './BillManagement.css';
+import '../App.css';
 
 const BillManagement = () => {
   const { provider, signer, account, contractAddresses } = useWeb3();
