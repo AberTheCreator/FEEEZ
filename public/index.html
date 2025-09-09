@@ -70,12 +70,12 @@
     </div>
     
     <script>
-      // Add Somnia Testnet to MetaMask if not already added
+      
       window.addEventListener('load', async () => {
         if (typeof window.ethereum !== 'undefined') {
           try {
             const chainId = await window.ethereum.request({ method: 'eth_chainId' });
-            const somniaTestnetChainId = '0x1F49D'; // 128137 in hex
+            const somniaTestnetChainId = '0x1F49D';
             
             if (chainId !== somniaTestnetChainId) {
               try {
