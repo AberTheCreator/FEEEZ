@@ -6,7 +6,7 @@ import Sidebar from './components/Layout/Sidebar';
 import Footer from './components/Layout/Footer';
 import WalletConnect from './components/WalletConnect';
 import Dashboard from './components/Dashboard';
-import BillManagement from './components/BillManagement';
+import BillManagement from './components/Form/BillManagement';
 import AIAssistant from './components/AIAssistant';
 import NFTRewards from './components/NFTRewards';
 import BillPools from './components/BillPools';
