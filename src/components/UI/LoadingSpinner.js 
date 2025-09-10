@@ -1,5 +1,10 @@
 import React from 'react';
 
+<div className="loading-container">
+  <img src="/logo192.png" alt="Feeez" className="animate-pulse" />
+  <p>Loading Feeez...</p>
+</div>
+
 const LoadingSpinner = ({ size = 'medium', color = '#667eea' }) => {
   const sizes = {
     small: '20px',
@@ -20,3 +25,4 @@ const LoadingSpinner = ({ size = 'medium', color = '#667eea' }) => {
 };
 
 export default LoadingSpinner;
+
