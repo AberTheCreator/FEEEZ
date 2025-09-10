@@ -33,4 +33,4 @@ const LoadingSpinner = ({ size = 'medium', color = '#667eea', showLogo = false }
   );
 };
 
-export default LoadingSpinner;
+export default LoadingSpinner; 
