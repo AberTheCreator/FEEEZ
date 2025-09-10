@@ -16,7 +16,8 @@ async function main() {
     
     console.log("\n2. Deploying BillPayment...");
     const BillPayment = await ethers.getContractFactory("BillPayment");
-    const billPayment = await BillPayment.deploy(feeCollector);
+    
+    const billPayment = await BillPayment.deploy(deployer.address, feeCollector);
     await billPayment.deployed();
     console.log("BillPayment deployed to:", billPayment.address);
     
@@ -32,9 +33,31 @@ async function main() {
     await billPool.deployed();
     console.log("BillPool deployed to:", billPool.address);
     
-    console.log("\n5. Minting test tokens...");
-    await mockUSDC.mint(deployer.address, ethers.utils.parseUnits("100000", 6));
-    console.log("Minted 100,000 USDC to deployer");
+    console.log("\n5. Updating frontend environment file...");
+    
+    const envContent = `# Smart Contract Addresses - Updated ${new Date().toISOString()}
+REACT_APP_BILL_PAYMENT_ADDRESS=${billPayment.address}
+REACT_APP_NFT_REWARDS_ADDRESS=${nftRewards.address}
+REACT_APP_BILL_POOL_ADDRESS=${billPool.address}
+REACT_APP_MOCK_USDC_ADDRESS=${mockUSDC.address}
+
+# Network Configuration
+REACT_APP_NETWORK=${network.name}
+REACT_APP_CHAIN_ID=${network.name === 'somnia_testnet' ? '50311' : '31337'}
+
+# AI Service (Optional)
+REACT_APP_GEMINI_API_KEY=
+REACT_APP_GEMINI_MODEL=gemini-pro`;
+
+    const fs = require('fs');
+    const path = require('path');
+    
+    // Write to both .env and .env.local for React
+    const projectRoot = path.join(__dirname, '../..');
+    fs.writeFileSync(path.join(projectRoot, '.env'), envContent);
+    fs.writeFileSync(path.join(projectRoot, '.env.local'), envContent);
+    
+    console.log("Environment files updated successfully!");
     
     console.log("\n=== DEPLOYMENT SUMMARY ===");
     console.log("Network:", network.name);
@@ -77,7 +100,7 @@ async function main() {
         try {
             await hre.run("verify:verify", {
                 address: billPayment.address,
-                constructorArguments: [feeCollector],
+                constructorArguments: [deployer.address, feeCollector], // Fix: Both parameters
             });
         } catch (error) {
             console.log("BillPayment verification failed:", error.message);
