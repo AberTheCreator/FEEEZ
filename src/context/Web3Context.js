@@ -1,6 +1,25 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { ethers } from 'ethers';
-import { SUPPORTED_NETWORKS, CHAIN_CONFIG } from '../constants/chainConfig';
+import { SUPPORTED_NETWORKS } from '../constants/chainConfig';
+
+const CONTRACT_ADDRESSES = {
+  billPayment: process.env.REACT_APP_BILL_PAYMENT_ADDRESS || "0x...",
+  nftRewards: process.env.REACT_APP_NFT_REWARDS_ADDRESS || "0x...", 
+  billPool: process.env.REACT_APP_BILL_POOL_ADDRESS || "0x...",
+  mockUSDC: process.env.REACT_APP_MOCK_USDC_ADDRESS || "0x..."
+};
+
+const SOMNIA_TESTNET_CONFIG = {
+  chainId: '0xC467', // 50311 in hex
+  chainName: 'Somnia Testnet',
+  nativeCurrency: {
+    name: 'STT',
+    symbol: 'STT',
+    decimals: 18
+  },
+  rpcUrls: ['https://testnet-rpc.somnia.network'],
+  blockExplorerUrls: ['https://testnet-explorer.somnia.network']
+};
 
 const Web3Context = createContext();
 
@@ -18,6 +37,7 @@ export const Web3Provider = ({ children }) => {
   const [account, setAccount] = useState(null);
   const [chainId, setChainId] = useState(null);
   const [balance, setBalance] = useState('0');
+  const [usdcBalance, setUsdcBalance] = useState('0');
   const [network, setNetwork] = useState(null);
   const [connecting, setConnecting] = useState(false);
   const [error, setError] = useState(null);
@@ -56,11 +76,12 @@ export const Web3Provider = ({ children }) => {
       const userAccount = await web3Signer.getAddress();
       const network = await web3Provider.getNetwork();
       
-      if (!SUPPORTED_NETWORKS[network.chainId]) {
+      /
+      if (network.chainId !== 50311) {
         try {
           await switchToSomniaNetwork();
         } catch (switchError) {
-          setError('Please switch to Somnia network to use FEEEZ');
+          setError('Please switch to Somnia testnet to use FEEEZ');
           return false;
         }
       }
@@ -69,10 +90,14 @@ export const Web3Provider = ({ children }) => {
       setSigner(web3Signer);
       setAccount(userAccount);
       setChainId(network.chainId);
-      setNetwork(SUPPORTED_NETWORKS[network.chainId] || network);
+      setNetwork({ name: 'Somnia Testnet', chainId: network.chainId });
 
+      
       const userBalance = await web3Provider.getBalance(userAccount);
       setBalance(ethers.utils.formatEther(userBalance));
+
+      
+      await updateUsdcBalance(web3Provider, userAccount);
 
       return true;
     } catch (error) {
@@ -84,22 +109,42 @@ export const Web3Provider = ({ children }) => {
     }
   };
 
+  const updateUsdcBalance = async (web3Provider, userAccount) => {
+    try {
+      if (CONTRACT_ADDRESSES.MockUSDC && CONTRACT_ADDRESSES.MockUSDC !== "0x0000000000000000000000000000000000000000") {
+        const usdcContract = new ethers.Contract(
+          CONTRACT_ADDRESSES.MockUSDC,
+          [
+            "function balanceOf(address account) external view returns (uint256)",
+            "function decimals() external view returns (uint8)"
+          ],
+          web3Provider
+        );
+        
+        const balance = await usdcContract.balanceOf(userAccount);
+        const decimals = await usdcContract.decimals();
+        setUsdcBalance(ethers.utils.formatUnits(balance, decimals));
+      }
+    } catch (error) {
+      console.error('Error updating USDC balance:', error);
+      setUsdcBalance('0');
+    }
+  };
+
   const switchToSomniaNetwork = async () => {
     if (!window.ethereum) throw new Error('MetaMask not found');
-
-    const somniaTestnet = CHAIN_CONFIG.SOMNIA_TESTNET;
     
     try {
       await window.ethereum.request({
         method: 'wallet_switchEthereumChain',
-        params: [{ chainId: somniaTestnet.chainId }],
+        params: [{ chainId: SOMNIA_TESTNET_CONFIG.chainId }],
       });
     } catch (switchError) {
       if (switchError.code === 4902) {
         try {
           await window.ethereum.request({
             method: 'wallet_addEthereumChain',
-            params: [somniaTestnet],
+            params: [SOMNIA_TESTNET_CONFIG],
           });
         } catch (addError) {
           throw new Error('Failed to add Somnia network');
@@ -116,6 +161,7 @@ export const Web3Provider = ({ children }) => {
     setAccount(null);
     setChainId(null);
     setBalance('0');
+    setUsdcBalance('0');
     setNetwork(null);
     setError(null);
   };
@@ -125,6 +171,7 @@ export const Web3Provider = ({ children }) => {
       try {
         const userBalance = await provider.getBalance(account);
         setBalance(ethers.utils.formatEther(userBalance));
+        await updateUsdcBalance(provider, account);
       } catch (error) {
         console.error('Error updating balance:', error);
       }
@@ -170,15 +217,17 @@ export const Web3Provider = ({ children }) => {
     account,
     chainId,
     balance,
+    usdcBalance,
     network,
     connecting,
     error,
+    contractAddresses: CONTRACT_ADDRESSES, 
     connectWallet,
     disconnectWallet,
     switchToSomniaNetwork,
     updateBalance,
     isConnected: !!account,
-    isSupportedNetwork: chainId ? !!SUPPORTED_NETWORKS[chainId] : false
+    isSupportedNetwork: chainId === 50311
   };
 
   return (
