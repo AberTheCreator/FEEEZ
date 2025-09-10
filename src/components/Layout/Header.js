@@ -1,6 +1,8 @@
 import React from 'react';
 import { useWeb3 } from '../../context/Web3Context';
 
+import logo from <img src="/logo192.png" alt="Feeez Logo" className="h-8 w-8" />
+
 const Header = () => {
   const { account, balance, network, disconnectWallet } = useWeb3();
 
