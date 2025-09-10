@@ -1,7 +1,7 @@
 import React from 'react';
 import { useWeb3 } from '../../context/Web3Context';
 
-import logo from <img src="/logo192.png" alt="Feeez Logo" className="h-8 w-8" />
+
 
 const Header = () => {
   const { account, balance, network, disconnectWallet } = useWeb3();
@@ -21,7 +21,8 @@ const Header = () => {
       <div className="header-content">
         <div className="logo-section">
           <div className="logo-circle" style={{ width: '40px', height: '40px', marginRight: '12px' }}>
-            <span className="logo-text" style={{ fontSize: '1.2rem' }}>💳</span>
+            <img src="/logo192.png" alt="Feeez Logo" className="h-8 w-8" style={{ width: '32px', height: '32px' }} />
+            
           </div>
           <div>
             <h1 className="app-title" style={{ fontSize: '1.5rem', marginBottom: '0' }}>FEEEZ</h1>
