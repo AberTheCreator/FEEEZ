@@ -1,97 +1,75 @@
-import React from 'react';
-import '../App.css';
+import React, { useState } from 'react';
+import { useWeb3 } from '../context/Web3Context';
 
-const WalletConnection = ({ onConnect }) => {
+const WalletConnect = () => {
+  const { connectWallet, connecting, error } = useWeb3();
+  const [isConnecting, setIsConnecting] = useState(false);
+
+  const handleConnect = async () => {
+    setIsConnecting(true);
+    try {
+      await connectWallet();
+    } catch (err) {
+      console.error('Connection failed:', err);
+    } finally {
+      setIsConnecting(false);
+    }
+  };
+
   return (
-    <div className="wallet-connection">
-      <div className="connection-container">
-        <div className="connection-header">
-          <div className="app-logo">
+    <div className="wallet-connect">
+      <div className="connect-container">
+        <div className="connect-card">
+          <div className="logo-section">
             <div className="logo-circle">
-              <span className="logo-icon">💸</span>
+              <span className="logo-text">💸</span>
             </div>
-            <h1 className="app-title">FEEEZ</h1>
-            <p className="app-subtitle">Bills Paid. Fees Gone.</p>
+            <h1 className="app-name">FEEEZ</h1>
+            <p className="tagline">Bills Paid. Fees Gone.</p>
           </div>
-        </div>
 
-        <div className="connection-content">
-          <div className="feature-preview">
-            <div className="feature-card">
-              <span className="feature-icon"> </span>
-              <h3>Lightning Fast Payments</h3>
-              <p>Pay bills instantly on Somnia's ultra-fast blockchain</p>
+          <div className="features-preview">
+            <div className="feature-item">
+              <span className="feature-icon">⚡</span>
+              <span className="feature-text">Lightning Fast Payments</span>
             </div>
             
-            <div className="feature-card">
-              <span className="feature-icon"> </span>
-              <h3>AI Financial Assistant</h3>
-              <p>Get smart insights and payment reminders</p>
+            <div className="feature-item">
+              <span className="feature-icon">🤖</span>
+              <span className="feature-text">AI Financial Assistant</span>
             </div>
             
-            <div className="feature-card">
+            <div className="feature-item">
               <span className="feature-icon">🏆</span>
-              <h3>NFT Rewards</h3>
-              <p>Earn loyalty NFTs for consistent bill payments</p>
+              <span className="feature-text">NFT Rewards</span>
             </div>
             
-            <div className="feature-card">
+            <div className="feature-item">
               <span className="feature-icon">🤝</span>
-              <h3>Bill Splitting</h3>
-              <p>Share bills with friends and family</p>
+              <span className="feature-text">Bill Splitting</span>
             </div>
           </div>
 
-          <div className="connection-actions">
-            <button className="connect-button" onClick={onConnect}>
-              <span className="button-icon">🔗</span>
-              <span className="button-text">Connect Wallet</span>
-            </button>
-            
-            <div className="supported-wallets">
-              <p>Supported wallets:</p>
-              <div className="wallet-icons">
-                <div className="wallet-icon">🦊 MetaMask</div>
-                <div className="wallet-icon">👛 WalletConnect</div>
-                <div className="wallet-icon">🔷 Coinbase</div>
-              </div>
+          {error && (
+            <div className="error-message">
+              {error}
             </div>
-          </div>
-        </div>
+          )}
 
-        <div className="connection-benefits">
-          <div className="benefit-item">
-            <span className="benefit-icon">🔒</span>
-            <div className="benefit-text">
-              <h4>Secure & Non-custodial</h4>
-              <p>Your funds stay in your wallet</p>
-            </div>
-          </div>
-          
-          <div className="benefit-item">
-            <span className="benefit-icon">💰</span>
-            <div className="benefit-text">
-              <h4>Low Fees</h4>
-              <p>Minimal transaction costs on Somnia</p>
-            </div>
-          </div>
-          
-          <div className="benefit-item">
-            <span className="benefit-icon">🌍</span>
-            <div className="benefit-text">
-              <h4>Global Payments</h4>
-              <p>Pay bills anywhere in the world</p>
-            </div>
-          </div>
-        </div>
+          <button 
+            className="connect-button" 
+            onClick={handleConnect}
+            disabled={connecting || isConnecting}
+          >
+            {connecting || isConnecting ? 'Connecting...' : 'Connect Wallet'}
+          </button>
 
-        <div className="connection-footer">
-          <p>By connecting your wallet, you agree to our Terms of Service</p>
           <div className="network-info">
-            <span className="network-badge">
-              <span className="network-dot"></span>
-              Somnia Network
-            </span>
+            <p>Powered by Somnia Network</p>
+            <div className="network-badge">
+              <div className="network-dot"></div>
+              <span>Somnia Testnet</span>
+            </div>
           </div>
         </div>
       </div>
@@ -99,4 +77,4 @@ const WalletConnection = ({ onConnect }) => {
   );
 };
 
-export default WalletConnection;
+export default WalletConnect;
