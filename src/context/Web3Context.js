@@ -2,15 +2,18 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { ethers } from 'ethers';
 import { SUPPORTED_NETWORKS } from '../constants/chainConfig';
 
-const CONTRACT_ADDRESSES = {
-  billPayment: process.env.REACT_APP_BILL_PAYMENT_ADDRESS || "0x...",
-  nftRewards: process.env.REACT_APP_NFT_REWARDS_ADDRESS || "0x...", 
-  billPool: process.env.REACT_APP_BILL_POOL_ADDRESS || "0x...",
-  mockUSDC: process.env.REACT_APP_MOCK_USDC_ADDRESS || "0x..."
+const Web3Context = createContext();
+
+export const useWeb3 = () => {
+  const context = useContext(Web3Context);
+  if (!context) {
+    throw new Error('useWeb3 must be used within a Web3Provider');
+  }
+  return context;
 };
 
 const SOMNIA_TESTNET_CONFIG = {
-  chainId: '0xC467', // 50311 in hex
+  chainId: '0xC467',
   chainName: 'Somnia Testnet',
   nativeCurrency: {
     name: 'STT',
@@ -21,14 +24,13 @@ const SOMNIA_TESTNET_CONFIG = {
   blockExplorerUrls: ['https://testnet-explorer.somnia.network']
 };
 
-const Web3Context = createContext();
-
-export const useWeb3 = () => {
-  const context = useContext(Web3Context);
-  if (!context) {
-    throw new Error('useWeb3 must be used within a Web3Provider');
-  }
-  return context;
+const getContractAddresses = () => {
+  return {
+    billPayment: process.env.REACT_APP_BILL_PAYMENT_ADDRESS || "0x0000000000000000000000000000000000000000",
+    nftRewards: process.env.REACT_APP_NFT_REWARDS_ADDRESS || "0x0000000000000000000000000000000000000000",
+    billPool: process.env.REACT_APP_BILL_POOL_ADDRESS || "0x0000000000000000000000000000000000000000",
+    mockUSDC: process.env.REACT_APP_MOCK_USDC_ADDRESS || "0x0000000000000000000000000000000000000000"
+  };
 };
 
 export const Web3Provider = ({ children }) => {
@@ -41,6 +43,13 @@ export const Web3Provider = ({ children }) => {
   const [network, setNetwork] = useState(null);
   const [connecting, setConnecting] = useState(false);
   const [error, setError] = useState(null);
+  const [contractAddresses, setContractAddresses] = useState(getContractAddresses());
+
+  useEffect(() => {
+    const addresses = getContractAddresses();
+    setContractAddresses(addresses);
+    console.log('Contract Addresses:', addresses);
+  }, []);
 
   const checkIfWalletConnected = async () => {
     try {
@@ -69,6 +78,7 @@ export const Web3Provider = ({ children }) => {
     setError(null);
 
     try {
+      
       await window.ethereum.request({ method: 'eth_requestAccounts' });
       
       const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -76,13 +86,20 @@ export const Web3Provider = ({ children }) => {
       const userAccount = await web3Signer.getAddress();
       const network = await web3Provider.getNetwork();
       
-      /
-      if (network.chainId !== 50311) {
+      console.log('Connected to network:', network);
+      console.log('User account:', userAccount);
+      
+      
+      if (network.chainId !== 50311 && network.chainId !== 31337) {
+        console.warn('Not on Somnia testnet, attempting to switch...');
         try {
           await switchToSomniaNetwork();
-        } catch (switchError) {
-          setError('Please switch to Somnia testnet to use FEEEZ');
+          
+          window.location.reload();
           return false;
+        } catch (switchError) {
+          console.warn('Could not switch to Somnia, continuing on current network');
+          
         }
       }
 
@@ -90,7 +107,10 @@ export const Web3Provider = ({ children }) => {
       setSigner(web3Signer);
       setAccount(userAccount);
       setChainId(network.chainId);
-      setNetwork({ name: 'Somnia Testnet', chainId: network.chainId });
+      setNetwork({ 
+        name: network.chainId === 50311 ? 'Somnia Testnet' : `Chain ${network.chainId}`, 
+        chainId: network.chainId 
+      });
 
       
       const userBalance = await web3Provider.getBalance(userAccount);
@@ -102,7 +122,7 @@ export const Web3Provider = ({ children }) => {
       return true;
     } catch (error) {
       console.error('Error connecting wallet:', error);
-      setError('Failed to connect wallet');
+      setError(`Failed to connect wallet: ${error.message}`);
       return false;
     } finally {
       setConnecting(false);
@@ -111,9 +131,10 @@ export const Web3Provider = ({ children }) => {
 
   const updateUsdcBalance = async (web3Provider, userAccount) => {
     try {
-      if (CONTRACT_ADDRESSES.MockUSDC && CONTRACT_ADDRESSES.MockUSDC !== "0x0000000000000000000000000000000000000000") {
+      const addresses = contractAddresses;
+      if (addresses.mockUSDC && addresses.mockUSDC !== "0x0000000000000000000000000000000000000000") {
         const usdcContract = new ethers.Contract(
-          CONTRACT_ADDRESSES.MockUSDC,
+          addresses.mockUSDC,
           [
             "function balanceOf(address account) external view returns (uint256)",
             "function decimals() external view returns (uint8)"
@@ -124,6 +145,10 @@ export const Web3Provider = ({ children }) => {
         const balance = await usdcContract.balanceOf(userAccount);
         const decimals = await usdcContract.decimals();
         setUsdcBalance(ethers.utils.formatUnits(balance, decimals));
+        console.log('USDC Balance updated:', ethers.utils.formatUnits(balance, decimals));
+      } else {
+        console.warn('USDC contract address not available');
+        setUsdcBalance('0');
       }
     } catch (error) {
       console.error('Error updating USDC balance:', error);
@@ -182,22 +207,26 @@ export const Web3Provider = ({ children }) => {
     checkIfWalletConnected();
 
     if (window.ethereum) {
-      window.ethereum.on('accountsChanged', (accounts) => {
+      const handleAccountsChanged = (accounts) => {
         if (accounts.length === 0) {
           disconnectWallet();
         } else {
           connectWallet();
         }
-      });
+      };
 
-      window.ethereum.on('chainChanged', (chainId) => {
+      const handleChainChanged = (chainId) => {
+        console.log('Chain changed to:', chainId);
         window.location.reload();
-      });
+      };
+
+      window.ethereum.on('accountsChanged', handleAccountsChanged);
+      window.ethereum.on('chainChanged', handleChainChanged);
 
       return () => {
         if (window.ethereum.removeListener) {
-          window.ethereum.removeListener('accountsChanged', connectWallet);
-          window.ethereum.removeListener('chainChanged', () => window.location.reload());
+          window.ethereum.removeListener('accountsChanged', handleAccountsChanged);
+          window.ethereum.removeListener('chainChanged', handleChainChanged);
         }
       };
     }
@@ -221,13 +250,13 @@ export const Web3Provider = ({ children }) => {
     network,
     connecting,
     error,
-    contractAddresses: CONTRACT_ADDRESSES, 
+    contractAddresses,
     connectWallet,
     disconnectWallet,
     switchToSomniaNetwork,
     updateBalance,
     isConnected: !!account,
-    isSupportedNetwork: chainId === 50311
+    isSupportedNetwork: chainId === 50311 || chainId === 31337 // Allow local development
   };
 
   return (
