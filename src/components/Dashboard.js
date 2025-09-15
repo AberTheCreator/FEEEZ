@@ -2,8 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
 import { useWeb3 } from '../context/Web3Context';
 import { useAI } from '../context/AIContext';
-import BillPaymentABI from '../contracts/BillPayment.json';
 import './Dashboard.css';
+
+const BILL_PAYMENT_ABI = [
+  "function getUserBills(address user) external view returns (uint256[])",
+  "function getUserPayments(address user) external view returns (uint256[])",
+  "function getBill(uint256 billId) external view returns (tuple(uint256 billId, address payer, address payee, address token, uint256 amount, uint256 frequency, uint256 nextPayment, uint256 totalPayments, uint256 completedPayments, uint8 status, string description, bytes32 category))",
+  "function getPayment(uint256 paymentId) external view returns (tuple(uint256 paymentId, uint256 billId, address payer, address payee, address token, uint256 amount, uint256 timestamp, uint256 confirmationDeadline, uint8 status, bytes32 proofHash))",
+  "function executeBillPayment(uint256 billId) external"
+];
 
 const Dashboard = () => {
   const { provider, signer, account, contractAddresses, usdcBalance } = useWeb3();
@@ -20,51 +27,96 @@ const Dashboard = () => {
   });
 
   useEffect(() => {
-    if (provider && account) {
+    if (provider && account && contractAddresses?.billPayment) {
       loadDashboardData();
     }
-  }, [provider, account]);
+  }, [provider, account, contractAddresses]);
 
   const loadDashboardData = async () => {
     try {
       setLoading(true);
-      const contract = new ethers.Contract(contractAddresses.billPayment, BillPaymentABI.abi, provider);
       
-      const userBillIds = await contract.getUserBills(account);
-      const userPaymentIds = await contract.getUserPayments(account);
       
-      const billPromises = userBillIds.map(id => contract.getBill(id));
-      const paymentPromises = userPaymentIds.map(id => contract.getPayment(id));
-      
-      const [billResults, paymentResults] = await Promise.all([
-        Promise.all(billPromises),
-        Promise.all(paymentPromises)
-      ]);
+      if (!contractAddresses.billPayment || contractAddresses.billPayment === "0x0000000000000000000000000000000000000000") {
+        console.warn('Contract address not configured');
+        setLoading(false);
+        return;
+      }
 
-      const formattedBills = billResults.map(bill => ({
-        billId: bill.billId.toString(),
-        description: bill.description,
-        amount: ethers.utils.formatUnits(bill.amount, 6),
-        frequency: bill.frequency.toString(),
-        nextPayment: bill.nextPayment.toString(),
-        status: ['Active', 'Paused', 'Cancelled', 'Completed'][bill.status],
-        category: ethers.utils.parseBytes32String(bill.category)
-      }));
-
-      const formattedPayments = paymentResults.map(payment => ({
-        paymentId: payment.paymentId.toString(),
-        billId: payment.billId.toString(),
-        amount: ethers.utils.formatUnits(payment.amount, 6),
-        timestamp: payment.timestamp.toString(),
-        status: ['Pending', 'Escrowed', 'Confirmed', 'Failed', 'Refunded'][payment.status]
-      }));
-
-      setBills(formattedBills);
-      setPayments(formattedPayments);
+      const contract = new ethers.Contract(
+        contractAddresses.billPayment, 
+        BILL_PAYMENT_ABI, 
+        provider
+      );
       
-      calculateStats(formattedBills, formattedPayments);
-      analyzeSpending(formattedBills, formattedPayments);
-      
+      try {
+        const userBillIds = await contract.getUserBills(account);
+        const userPaymentIds = await contract.getUserPayments(account);
+        
+        const billPromises = userBillIds.map(async (id) => {
+          try {
+            return await contract.getBill(id);
+          } catch (error) {
+            console.error(`Error fetching bill ${id}:`, error);
+            return null;
+          }
+        });
+        
+        const paymentPromises = userPaymentIds.map(async (id) => {
+          try {
+            return await contract.getPayment(id);
+          } catch (error) {
+            console.error(`Error fetching payment ${id}:`, error);
+            return null;
+          }
+        });
+        
+        const [billResults, paymentResults] = await Promise.all([
+          Promise.all(billPromises),
+          Promise.all(paymentPromises)
+        ]);
+
+        const formattedBills = billResults
+          .filter(bill => bill !== null)
+          .map(bill => ({
+            billId: bill.billId.toString(),
+            description: bill.description,
+            amount: ethers.utils.formatUnits(bill.amount, 6),
+            frequency: bill.frequency.toString(),
+            nextPayment: bill.nextPayment.toString(),
+            status: ['Active', 'Paused', 'Cancelled', 'Completed'][bill.status],
+            category: bill.category ? ethers.utils.parseBytes32String(bill.category) : 'other'
+          }));
+
+        const formattedPayments = paymentResults
+          .filter(payment => payment !== null)
+          .map(payment => ({
+            paymentId: payment.paymentId.toString(),
+            billId: payment.billId.toString(),
+            amount: ethers.utils.formatUnits(payment.amount, 6),
+            timestamp: payment.timestamp.toString(),
+            status: ['Pending', 'Escrowed', 'Confirmed', 'Failed', 'Refunded'][payment.status]
+          }));
+
+        setBills(formattedBills);
+        setPayments(formattedPayments);
+        
+        calculateStats(formattedBills, formattedPayments);
+        analyzeSpending(formattedBills, formattedPayments);
+        
+      } catch (contractError) {
+        console.error('Contract interaction error:', contractError);
+        
+        setBills([]);
+        setPayments([]);
+        setStats({
+          totalBills: 0,
+          dueBills: 0,
+          monthlySpend: 0,
+          nextPayment: null
+        });
+      }
+        
     } catch (error) {
       console.error('Error loading dashboard data:', error);
     } finally {
@@ -103,16 +155,25 @@ const Dashboard = () => {
 
   const executeBillPayment = async (billId) => {
     try {
-      const contract = new ethers.Contract(contractAddresses.billPayment, BillPaymentABI.abi, signer);
-      const tx = await contract.executeBillPayment(billId);
+      if (!contractAddresses.billPayment || contractAddresses.billPayment === "0x0000000000000000000000000000000000000000") {
+        alert('Contract not configured. Please check deployment.');
+        return;
+      }
+
+      const contract = new ethers.Contract(
+        contractAddresses.billPayment, 
+        BILL_PAYMENT_ABI, 
+        signer
+      );
       
+      const tx = await contract.executeBillPayment(billId);
       console.log('Payment transaction sent:', tx.hash);
       await tx.wait();
       
       loadDashboardData();
     } catch (error) {
       console.error('Error executing payment:', error);
-      alert('Failed to execute payment: ' + error.message);
+      alert('Failed to execute payment: ' + (error.reason || error.message));
     }
   };
 
@@ -127,13 +188,34 @@ const Dashboard = () => {
     );
   }
 
+  if (!contractAddresses.billPayment || contractAddresses.billPayment === "0x0000000000000000000000000000000000000000") {
+    return (
+      <div className="dashboard">
+        <div className="setup-message" style={{ textAlign: 'center', padding: '3rem' }}>
+          <h2>Welcome to FEEEZ! 🎉</h2>
+          <p style={{ marginBottom: '2rem' }}>
+            Your contracts need to be deployed. Please check your environment configuration.
+          </p>
+          <div style={{ background: '#f8fafc', padding: '1rem', borderRadius: '8px', fontSize: '0.9rem' }}>
+            <strong>Next steps:</strong>
+            <ol style={{ textAlign: 'left', marginTop: '1rem' }}>
+              <li>Deploy contracts using: <code>npm run deploy</code></li>
+              <li>Update your .env file with contract addresses</li>
+              <li>Refresh this page</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="dashboard">
       <div className="dashboard-header">
         <div className="header-main">
           <h1 className="dashboard-title">Financial Overview</h1>
           <div className="balance-display">
-            <span className="balance-amount">${parseFloat(usdcBalance).toLocaleString()}</span>
+            <span className="balance-amount">${parseFloat(usdcBalance || 0).toLocaleString()}</span>
             <span className="balance-label">Available Balance</span>
           </div>
         </div>
@@ -144,7 +226,7 @@ const Dashboard = () => {
             <div className="stat-label">Active Bills</div>
           </div>
           
-          <div className="stat-card urgent">
+          <div className={`stat-card ${stats.dueBills > 0 ? 'urgent' : ''}`}>
             <div className="stat-number">{stats.dueBills}</div>
             <div className="stat-label">Due Now</div>
           </div>
@@ -210,6 +292,15 @@ const Dashboard = () => {
                   <div className={`priority-indicator ${prediction.priority}`}></div>
                 </div>
               ))}
+              
+              {predictions.length === 0 && (
+                <div style={{ textAlign: 'center', padding: '2rem', color: '#666' }}>
+                  <p>No upcoming bills found.</p>
+                  <p style={{ fontSize: '0.9rem', marginTop: '0.5rem' }}>
+                    Create your first bill to get started!
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -231,6 +322,13 @@ const Dashboard = () => {
                   </div>
                 </div>
               ))}
+              
+              {aiInsights.length === 0 && (
+                <div style={{ textAlign: 'center', padding: '2rem', color: '#666' }}>
+                  <span style={{ fontSize: '2rem', display: 'block', marginBottom: '1rem' }}>🤖</span>
+                  <p>AI insights will appear here once you start making payments!</p>
+                </div>
+              )}
             </div>
           </div>
 
@@ -239,7 +337,7 @@ const Dashboard = () => {
               <h2>Spending Breakdown</h2>
             </div>
             
-            {budgetAnalysis && (
+            {budgetAnalysis && Object.keys(budgetAnalysis.categories).length > 0 ? (
               <div className="spending-chart">
                 {Object.entries(budgetAnalysis.categories).map(([category, amount]) => {
                   const percentage = (amount / budgetAnalysis.totalMonthlySpend) * 100;
@@ -260,6 +358,11 @@ const Dashboard = () => {
                   );
                 })}
               </div>
+            ) : (
+              <div style={{ textAlign: 'center', padding: '2rem', color: '#666' }}>
+                <span style={{ fontSize: '2rem', display: 'block', marginBottom: '1rem' }}>📊</span>
+                <p>Your spending breakdown will appear here once you have active bills!</p>
+              </div>
             )}
           </div>
 
@@ -269,22 +372,22 @@ const Dashboard = () => {
             </div>
             
             <div className="actions-grid">
-              <button className="action-button">
+              <button className="action-button" onClick={() => window.alert('Feature coming soon!')}>
                 <span className="action-icon">➕</span>
                 <span className="action-text">Add Bill</span>
               </button>
               
-              <button className="action-button">
+              <button className="action-button" onClick={() => window.alert('Feature coming soon!')}>
                 <span className="action-icon">🤝</span>
                 <span className="action-text">Create Pool</span>
               </button>
               
-              <button className="action-button">
+              <button className="action-button" onClick={() => window.alert('Feature coming soon!')}>
                 <span className="action-icon">💰</span>
                 <span className="action-text">Get USDC</span>
               </button>
               
-              <button className="action-button">
+              <button className="action-button" onClick={() => window.alert('Feature coming soon!')}>
                 <span className="action-icon">📊</span>
                 <span className="action-text">View Reports</span>
               </button>
