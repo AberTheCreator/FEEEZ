@@ -87,7 +87,6 @@ export const Web3Provider = ({ children }) => {
       console.log('Connected to network:', network);
       console.log('User account:', userAccount);
       
-      
       if (network.chainId !== 50311 && network.chainId !== 31337) {
         console.warn('Not on Somnia testnet, attempting to switch...');
         try {
@@ -109,11 +108,9 @@ export const Web3Provider = ({ children }) => {
         chainId: network.chainId 
       });
 
-      
       const userBalance = await web3Provider.getBalance(userAccount);
       setBalance(ethers.utils.formatEther(userBalance));
 
-      
       await updateUsdcBalance(web3Provider, userAccount);
 
       return true;
