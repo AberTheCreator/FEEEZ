@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { ethers } from 'ethers';
-import { SUPPORTED_NETWORKS } from '../constants/chainConfig';
 
 const Web3Context = createContext();
 
@@ -13,7 +12,7 @@ export const useWeb3 = () => {
 };
 
 const SOMNIA_TESTNET_CONFIG = {
-  chainId: '0xC467',
+  chainId: '0xC467', 
   chainName: 'Somnia Testnet',
   nativeCurrency: {
     name: 'STT',
@@ -78,7 +77,6 @@ export const Web3Provider = ({ children }) => {
     setError(null);
 
     try {
-      
       await window.ethereum.request({ method: 'eth_requestAccounts' });
       
       const web3Provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -99,7 +97,6 @@ export const Web3Provider = ({ children }) => {
           return false;
         } catch (switchError) {
           console.warn('Could not switch to Somnia, continuing on current network');
-          
         }
       }
 
@@ -238,7 +235,7 @@ export const Web3Provider = ({ children }) => {
       const interval = setInterval(updateBalance, 30000);
       return () => clearInterval(interval);
     }
-  }, [account, provider]);
+  }, [account, provider, contractAddresses]);
 
   const value = {
     provider,
@@ -256,7 +253,7 @@ export const Web3Provider = ({ children }) => {
     switchToSomniaNetwork,
     updateBalance,
     isConnected: !!account,
-    isSupportedNetwork: chainId === 50311 || chainId === 31337 // Allow local development
+    isSupportedNetwork: chainId === 50311 || chainId === 31337
   };
 
   return (
