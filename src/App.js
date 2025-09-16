@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Web3Provider } from './context/Web3Context';
 import { AIProvider } from './context/AIContext';
 import Header from './components/Layout/Header';
@@ -10,6 +11,7 @@ import BillManagement from './components/Form/BillManagement';
 import AIAssistant from './components/AIAssistant';
 import NFTRewards from './components/NFTRewards';
 import BillPools from './components/BillPools';
+import Landing from './pages/Landing';
 import { useWeb3 } from './context/Web3Context';
 import './App.css';
 
@@ -54,14 +56,28 @@ const AppContent = () => {
   );
 };
 
-function App() {
+const AppWithRouter = () => {
   return (
-    <Web3Provider>
-      <AIProvider>
-        <AppContent />
-      </AIProvider>
-    </Web3Provider>
+    <Router>
+      <Web3Provider>
+        <AIProvider>
+          <Routes>
+      
+            <Route path="/" element={<Landing />} />
+            
+            <Route path="/app" element={<AppContent />} />
+            <Route path="/dashboard" element={<Navigate to="/app" replace />} />
+            
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </AIProvider>
+      </Web3Provider>
+    </Router>
   );
+};
+
+function App() {
+  return <AppWithRouter />;
 }
 
 export default App;
