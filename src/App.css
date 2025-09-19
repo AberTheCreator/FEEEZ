@@ -862,4 +862,320 @@ body {
   .logo-text {
     font-size: 1.2rem;
   }
+  
+.wallet-connect {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #44042fff 0%, #764ba2 100%);
+  padding: 20px;
+}
+
+.connect-container {
+  width: 100%;
+  max-width: 400px;
+}
+
+.connect-card {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.connect-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.15);
+}
+
+.connect-card.connected {
+  border: 2px solid #10b981;
+  background: rgba(255, 255, 255, 0.98);
+}
+
+.logo-section {
+  margin-bottom: 2rem;
+}
+
+.logo-circle {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  margin: 0 auto 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(45deg, #44042fff, #764ba2);
+  padding: 10px;
+}
+
+.wallet-logo {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+}
+
+.app-name {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #1f2937;
+  margin: 0.5rem 0;
+  background: linear-gradient(45deg, #44042fff, #764ba2);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.tagline {
+  color: #6b7280;
+  font-size: 1rem;
+  margin: 0;
+  font-weight: 500;
+}
+
+.features-preview {
+  margin: 2rem 0;
+  display: grid;
+  gap: 1rem;
+}
+
+.feature-item {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background: rgba(103, 126, 234, 0.1);
+  border-radius: 10px;
+  transition: all 0.2s ease;
+}
+
+.feature-item:hover {
+  background: rgba(103, 126, 234, 0.2);
+  transform: translateX(5px);
+}
+
+.feature-icon {
+  font-size: 1.5rem;
+  margin-right: 1rem;
+}
+
+.feature-text {
+  color: #374151;
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.connect-button {
+  width: 100%;
+  padding: 1rem 1.5rem;
+  background: linear-gradient(45deg, #44042fff, #764ba2);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin: 1.5rem 0;
+}
+
+.connect-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px rgba(103, 126, 234, 0.4);
+}
+
+.connect-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.loading-spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.wallet-icon {
+  font-size: 1.2rem;
+}
+
+.error-message,
+.warning-message {
+  background: #fef2f2;
+  border: 1px solid #fca5a5;
+  border-radius: 10px;
+  padding: 1rem;
+  margin: 1rem 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  text-align: left;
+}
+
+.warning-message {
+  background: #fffbeb;
+  border-color: #fbbf24;
+}
+
+.warning-message.network-warning {
+  background: #dbeafe;
+  border-color: #60a5fa;
+}
+
+.error-icon,
+.warning-icon {
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.error-message p,
+.warning-message p {
+  margin: 0 0 0.5rem 0;
+  color: #374151;
+}
+
+.error-message p:last-child,
+.warning-message p:last-child {
+  margin-bottom: 0;
+}
+
+.install-link,
+.help-link {
+  color: #667eea;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.install-link:hover,
+.help-link:hover {
+  text-decoration: underline;
+}
+
+.switch-network-button {
+  background: #3b82f6;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  margin-top: 0.5rem;
+}
+
+.switch-network-button:hover {
+  background: #2563eb;
+}
+
+.connection-success {
+  margin: 2rem 0;
+  padding: 1.5rem;
+  background: #f0fdf4;
+  border-radius: 12px;
+  border: 1px solid #10b981;
+}
+
+.success-icon {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.success-message {
+  color: #059669;
+  font-weight: 600;
+  margin: 0.5rem 0;
+}
+
+.account-info {
+  color: #6b7280;
+  font-family: monospace;
+  font-size: 0.9rem;
+  margin: 0.5rem 0;
+}
+
+.network-info {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.network-info p {
+  color: #6b7280;
+  margin: 0.5rem 0;
+  font-size: 0.9rem;
+}
+
+.network-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: #f3f4f6;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  color: #6b7280;
+  margin: 0.5rem 0;
+}
+
+.network-badge.connected {
+  background: #d1fae5;
+  color: #059669;
+}
+
+.network-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #9ca3af;
+}
+
+.network-dot.active {
+  background: #10b981;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.help-links {
+  margin-top: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+}
+
+.divider {
+  color: #d1d5db;
+}
+
+@media (max-width: 480px) {
+  .connect-card {
+    padding: 1.5rem;
+    margin: 1rem;
+  }
+  
+  .app-name {
+    font-size: 2rem;
+  }
+  
+  .feature-item {
+    padding: 0.5rem 0.75rem;
+  }
+  
+  .feature-text {
+    font-size: 0.8rem;
+  }
 }
