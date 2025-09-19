@@ -42,3 +42,9 @@ Thumbs.db
 
 coverage.json
 .openzeppelin/
+
+artifacts/
+cache/
+
+.env
+.env.local
