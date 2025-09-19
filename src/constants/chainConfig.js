@@ -11,8 +11,8 @@ export const SUPPORTED_NETWORKS = {
     chainId: '0x1F4A9', 
     chainName: 'Somnia Testnet',
     nativeCurrency: { name: 'STT', symbol: 'STT', decimals: 18 },
-    rpcUrls: ['https://testnet-rpc.somnia.network'],
-    blockExplorerUrls: ['https://testnet-explorer.somnia.network'] // Use the actual explorer
+    rpcUrls: ['https://dream-rpc.somnia.network'],
+    blockExplorerUrls: ['https://testnet-explorer.somnia.network']
   },
   2710: {
     chainId: '0xA96',
