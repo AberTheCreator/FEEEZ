@@ -12,15 +12,15 @@ export const useWeb3 = () => {
 };
 
 const SOMNIA_TESTNET_CONFIG = {
-  chainId: '0xC467', 
-  chainName: 'Somnia Testnet',
+  chainId: '0xC478', 
+  chainName: 'Somnia Testnet (Shannon)',
   nativeCurrency: {
     name: 'STT',
     symbol: 'STT',
     decimals: 18
   },
-  rpcUrls: ['https://testnet-rpc.somnia.network'],
-  blockExplorerUrls: ['https://testnet-explorer.somnia.network']
+  rpcUrls: ['https://dream-rpc.somnia.network'],
+  blockExplorerUrls: ['https://shannon-explorer.somnia.network']
 };
 
 const getContractAddresses = () => {
@@ -87,7 +87,8 @@ export const Web3Provider = ({ children }) => {
       console.log('Connected to network:', network);
       console.log('User account:', userAccount);
       
-      if (network.chainId !== 50311 && network.chainId !== 31337) {
+      
+      if (network.chainId !== 50312 && network.chainId !== 31337) {
         console.warn('Not on Somnia testnet, attempting to switch...');
         try {
           await switchToSomniaNetwork();
@@ -96,6 +97,7 @@ export const Web3Provider = ({ children }) => {
           return false;
         } catch (switchError) {
           console.warn('Could not switch to Somnia, continuing on current network');
+          setError('Please switch to Somnia testnet manually in MetaMask');
         }
       }
 
@@ -104,7 +106,7 @@ export const Web3Provider = ({ children }) => {
       setAccount(userAccount);
       setChainId(network.chainId);
       setNetwork({ 
-        name: network.chainId === 50311 ? 'Somnia Testnet' : `Chain ${network.chainId}`, 
+        name: network.chainId === 50312 ? 'Somnia Testnet' : `Chain ${network.chainId}`, 
         chainId: network.chainId 
       });
 
@@ -154,11 +156,13 @@ export const Web3Provider = ({ children }) => {
     if (!window.ethereum) throw new Error('MetaMask not found');
     
     try {
+      
       await window.ethereum.request({
         method: 'wallet_switchEthereumChain',
         params: [{ chainId: SOMNIA_TESTNET_CONFIG.chainId }],
       });
     } catch (switchError) {
+      
       if (switchError.code === 4902) {
         try {
           await window.ethereum.request({
@@ -250,7 +254,7 @@ export const Web3Provider = ({ children }) => {
     switchToSomniaNetwork,
     updateBalance,
     isConnected: !!account,
-    isSupportedNetwork: chainId === 50311 || chainId === 31337
+    isSupportedNetwork: chainId === 50312 || chainId === 31337
   };
 
   return (
