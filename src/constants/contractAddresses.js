@@ -16,8 +16,8 @@ export const NETWORKS = {
   },
   50311: {
     name: 'Somnia Testnet',
-    rpcUrl: 'https://testnet-rpc.somnia.network',
-    chainId: 50311,
+    rpcUrl: 'https://dream-rpc.somnia.network',
+    chainId: 50312,
     isTestnet: true,
     blockExplorer: 'https://testnet-explorer.somnia.network'
   }
