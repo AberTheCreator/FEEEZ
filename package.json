@@ -8,19 +8,37 @@
     "@testing-library/jest-dom": "^5.16.4",
     "@testing-library/react": "^13.3.0",
     "@testing-library/user-event": "^13.5.0",
-    "ethers": "^5.7.2",
+    "ajv": "^8.17.1",
+    "dotenv": "^16.0.0",
+    "ethers": "^5.8.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.8.1",
-    "react-scripts": "5.0.1",
+    "react-scripts": "^5.0.1",
     "web-vitals": "^2.1.4"
+  },
+  "devDependencies": {
+    "@nomiclabs/hardhat-ethers": "^2.2.3",
+    "@nomicfoundation/hardhat-verify": "^2.0.0",
+    "@openzeppelin/contracts": "^4.9.6",
+    "chai": "^4.5.0",
+    "concurrently": "^8.2.0",
+    "hardhat": "^2.22.0"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "deploy": "npm run build && echo 'Build complete! Deploy the build folder to your hosting service.'"
+    "deploy": "npm run build && echo 'Build complete! Deploy the build folder to your hosting service.'",
+    "compile": "npx hardhat compile",
+    "deploy:somnia": "npx hardhat run scripts/deploy.js --network somnia_testnet",
+    "deploy:somnia:mainnet": "npx hardhat run scripts/deploy.js --network somnia_mainnet",
+    "deploy:local": "npx hardhat run scripts/deploy.js --network hardhat",
+    "start:blockchain": "npx hardhat node",
+    "verify:somnia": "npx hardhat verify --network somnia_testnet",
+    "dev": "concurrently \"npm run start:blockchain\" \"npm start\"",
+    "setup": "npm install"
   },
   "eslintConfig": {
     "extends": [
@@ -40,5 +58,9 @@
       "last 1 safari version"
     ]
   },
-  "proxy": "http://localhost:3001"
+  "proxy": "http://localhost:3001",
+  "main": "hardhat.config.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }

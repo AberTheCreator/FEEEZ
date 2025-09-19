@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
-import { useWeb3 } from '../context/Web3Context';
+import { useWeb3 } from '../context/Web3Context.js';
 
 const BILL_PAYMENT_ABI = [
   "function createBill(address payee, address token, uint256 amount, uint256 frequency, uint256 totalPayments, string memory description, bytes32 category) external returns (uint256)",

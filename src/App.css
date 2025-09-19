@@ -12,7 +12,7 @@ body {
 
 .landing-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #44042fff 0%, #764ba2 100%);
   overflow-x: hidden;
 }
 
@@ -24,7 +24,7 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #44042fff 0%, #764ba2 100%);
 }
 
 .app-header {
@@ -86,14 +86,14 @@ body {
 }
 
 .nav-item:hover {
-  background: rgba(102, 126, 234, 0.1);
+  background: rgba(68, 4, 47, 0.1);
   transform: translateX(4px);
 }
 
 .nav-item.active {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #44042fff 0%, #764ba2 100%);
   color: white;
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 4px 15px rgba(68, 4, 47, 0.4);
 }
 
 .nav-icon {
@@ -121,7 +121,7 @@ body {
   align-items: center;
   min-height: 100vh;
   padding: 2rem;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #44042fff 0%, #764ba2 100%);
 }
 
 .connect-container {
@@ -146,18 +146,28 @@ body {
   width: 80px;
   height: 80px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #44042fff 0%, #764ba2 100%);
   display: flex;
   align-items: center;
   justify-content: center;
   margin: 0 auto 1rem;
-  box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 8px 20px rgba(68, 4, 47, 0.4);
+  position: relative;
 }
 
 .logo-text {
-  font-size: 2rem;
+  font-size: 1.5rem;
   color: white;
   font-weight: bold;
+  z-index: 2;
+}
+
+/* Fix logo sizing issue */
+.logo-circle img {
+  width: 50px;
+  height: 50px;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
 }
 
 .app-name {
@@ -185,12 +195,13 @@ body {
   align-items: center;
   gap: 0.5rem;
   padding: 1rem;
-  background: rgba(102, 126, 234, 0.05);
+  background: rgba(68, 4, 47, 0.05);
   border-radius: 12px;
 }
 
 .feature-icon {
   font-size: 1.5rem;
+  color: #44042fff;
 }
 
 .feature-text {
@@ -205,7 +216,7 @@ body {
   font-size: 1.1rem;
   font-weight: 600;
   color: white;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #44042fff 0%, #764ba2 100%);
   border: none;
   border-radius: 12px;
   cursor: pointer;
@@ -215,7 +226,7 @@ body {
 
 .connect-button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 8px 25px rgba(68, 4, 47, 0.4);
 }
 
 .connect-button:disabled {
@@ -299,6 +310,7 @@ body {
 
 .stat-icon {
   font-size: 2rem;
+  color: #44042fff;
 }
 
 .stat-content h3 {
@@ -457,7 +469,7 @@ body {
 }
 
 .create-pool-button {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #44042fff 0%, #764ba2 100%);
   color: white;
   border: none;
   padding: 0.75rem 1.5rem;
@@ -469,7 +481,7 @@ body {
 
 .create-pool-button:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 8px 25px rgba(68, 4, 47, 0.4);
 }
 
 .tabs {
@@ -491,8 +503,8 @@ body {
 }
 
 .tab.active {
-  color: #667eea;
-  border-bottom-color: #667eea;
+  color: #44042fff;
+  border-bottom-color: #44042fff;
 }
 
 .pools-grid {
@@ -514,7 +526,7 @@ body {
 }
 
 .pool-card.my-pool {
-  border: 2px solid #667eea;
+  border: 2px solid #44042fff;
 }
 
 .pool-header {
@@ -535,7 +547,7 @@ body {
 }
 
 .creator-badge {
-  background: #667eea;
+  background: #44042fff;
   color: white;
   padding: 0.25rem 0.75rem;
   border-radius: 20px;
@@ -564,7 +576,7 @@ body {
 
 .progress-fill {
   height: 100%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #44042fff 0%, #764ba2 100%);
   transition: width 0.3s ease;
 }
 
@@ -600,7 +612,7 @@ body {
 }
 
 .join-pool-button {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #44042fff 0%, #764ba2 100%);
   color: white;
 }
 
@@ -745,7 +757,7 @@ body {
 }
 
 .create-button {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #44042fff 0%, #764ba2 100%);
   color: white;
 }
 
@@ -758,6 +770,7 @@ body {
 .empty-icon {
   font-size: 4rem;
   margin-bottom: 1rem;
+  color: #44042fff;
 }
 
 .empty-state h4 {
@@ -779,7 +792,7 @@ body {
   width: 40px;
   height: 40px;
   border: 3px solid #f3f4f6;
-  border-top: 3px solid #667eea;
+  border-top: 3px solid #44042fff;
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin-bottom: 1rem;
@@ -797,6 +810,12 @@ body {
     padding: 1rem;
   }
 
+  .wallet-logo {
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+  }
+  
   .sidebar {
     width: 100%;
     padding: 1rem;
@@ -828,5 +847,19 @@ body {
 
   .features-preview {
     grid-template-columns: 1fr;
+  }
+
+  .logo-circle {
+    width: 60px;
+    height: 60px;
+  }
+
+  .logo-circle img {
+    width: 35px;
+    height: 35px;
+  }
+
+  .logo-text {
+    font-size: 1.2rem;
   }
 }

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import useContract from './useContract';
-import { useWeb3 } from '../context/Web3Context';
+import useContract from './useContract.js';
+import { useWeb3 } from '../context/Web3Context.js';
 
 const useBills = () => {
   const [bills, setBills] = useState([]);

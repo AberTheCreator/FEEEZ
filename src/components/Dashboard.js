@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { ethers } from 'ethers';
-import { useWeb3 } from '../context/Web3Context';
-import { useAI } from '../context/AIContext';
+import { useWeb3 } from '../context/Web3Context.js';
+import { useAI } from '../context/AIContext.js';
 import './Dashboard.css';
 
 const BILL_PAYMENT_ABI = [

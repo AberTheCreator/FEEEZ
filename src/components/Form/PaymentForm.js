@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Input } from '../UI/Button';
+import { Button, Input } from '../UI/Button.js';
 
 const PaymentForm = ({ bill, onSubmit, onCancel }) => {
   const [loading, setLoading] = useState(false);

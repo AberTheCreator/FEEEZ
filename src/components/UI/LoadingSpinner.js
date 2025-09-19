@@ -1,0 +1,36 @@
+import React from 'react';
+import { useWeb3 } from '../../context/Web3Context.js';
+
+const LoadingSpinner = ({ size = 'medium', color = '#667eea', showLogo = false }) => {
+  const sizes = {
+    small: '20px',
+    medium: '40px',
+    large: '60px'
+  };
+
+  if (showLogo) {
+    return (
+      <div className="loading-container flex flex-col items-center justify-center space-y-4">
+        <img 
+          src="/logo192.png" 
+          alt="Feeez Logo" 
+          className="h-12 w-12 animate-pulse" 
+        />
+        <p className="text-gray-600">Loading Feeez...</p>
+      </div>
+    );
+  }
+
+  return (
+    <div
+      className="loading-spinner animate-spin border-4 border-gray-300 border-t-4 rounded-full"
+      style={{
+        width: sizes[size],
+        height: sizes[size],
+        borderTopColor: color
+      }}
+    ></div>
+  );
+};
+
+export default LoadingSpinner; 

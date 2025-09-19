@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import aiService from '../services/aiService';
+import aiService from '../services/aiService.js';
 
 const AIContext = createContext();
 

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import BillForm from './BillForm';
-import PaymentForm from './PaymentForm';
+import BillForm from './BillForm.js';
+import PaymentForm from './PaymentForm.js';
 
 
 const BillManagement = () => {

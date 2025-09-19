@@ -1,0 +1,385 @@
+# FEEEZ Smart Contract API Documentation
+
+## Overview
+
+FEEEZ consists of three main smart contracts:
+- **BillPayment**: Core bill management and payment functionality
+- **NFTRewards**: Loyalty NFT system for regular bill payers
+- **BillPool**: Community bill splitting and shared payments
+
+## BillPayment Contract
+
+### Data Structures
+
+```solidity
+enum BillStatus { Pending, Paid, Cancelled, Disputed }
+enum PaymentType { OneTime, Recurring }
+
+struct Bill {
+    uint256 id;
+    address payer;
+    address payee;
+    uint256 amount;
+    uint256 dueDate;
+    uint256 recurringInterval;
+    PaymentType paymentType;
+    BillStatus status;
+    string description;
+    bool autoPayEnabled;
+    uint256 createdAt;
+    uint256 lastPayment;
+}
+```
+
+### Core Functions
+
+#### `createBill()`
+Creates a new bill for payment.
+
+```solidity
+function createBill(
+    address _payee,
+    uint256 _amount,
+    uint256 _dueDate,
+    uint256 _recurringInterval,
+    PaymentType _paymentType,
+    string calldata _description,
+    bool _autoPayEnabled
+) external returns (uint256)
+```
+
+**Parameters:**
+- `_payee`: Address to receive payment
+- `_amount`: Payment amount in stablecoin units
+- `_dueDate`: Unix timestamp when bill is due
+- `_recurringInterval`: Seconds between payments (0 for one-time)
+- `_paymentType`: 0 for OneTime, 1 for Recurring
+- `_description`: Human-readable bill description
+- `_autoPayEnabled`: Whether to enable automatic payments
+
+**Returns:** Bill ID
+
+**Events:** `BillCreated(billId, payer, payee, amount)`
+
+#### `payBill()`
+Pays an existing bill.
+
+```solidity
+function payBill(uint256 _billId) external
+```
+
+**Parameters:**
+- `_billId`: ID of bill to pay
+
+**Requirements:**
+- Caller must be the bill payer
+- Bill must be in Pending status
+- Payment must be made before deadline + 1 day
+- Payer must have sufficient token balance and approval
+
+**Events:** `PaymentMade(billId, payer, amount, timestamp)`
+
+#### `releaseEscrow()`
+Releases escrowed payment to payee after waiting period.
+
+```solidity
+function releaseEscrow(uint256 _billId) external
+```
+
+**Parameters:**
+- `_billId`: ID of paid bill
+
+**Requirements:**
+- Caller must be the payee
+- Bill must be in Paid status
+- Escrow period (3 days) must have passed
+
+**Events:** `EscrowReleased(billId, payee, amount)`
+
+### View Functions
+
+#### `getBill()`
+Returns complete bill information.
+
+```solidity
+function getBill(uint256 _billId) external view returns (Bill memory)
+```
+
+#### `getUserBills()`
+Returns array of bill IDs for a user.
+
+```solidity
+function getUserBills(address _user) external view returns (uint256[] memory)
+```
+
+#### `getOverdueBills()`
+Returns overdue bills for a user.
+
+```solidity
+function getOverdueBills(address _user) external view returns (uint256[] memory)
+```
+
+#### `getUpcomingBills()`
+Returns bills due within specified timeframe.
+
+```solidity
+function getUpcomingBills(address _user, uint256 _timeframe) external view returns (uint256[] memory)
+```
+
+## NFTRewards Contract
+
+### Data Structures
+
+```solidity
+enum RewardTier { Bronze, Silver, Gold, Platinum, Diamond }
+
+struct RewardNFT {
+    uint256 tokenId;
+    address recipient;
+    RewardTier tier;
+    uint256 paymentsCount;
+    uint256 totalPaid;
+    uint256 mintDate;
+    string metadataURI;
+    bool isActive;
+}
+```
+
+### Core Functions
+
+#### `mintRewardNFT()`
+Mints NFT reward for eligible users (called by BillPayment contract).
+
+```solidity
+function mintRewardNFT(
+    address _recipient,
+    uint256 _paymentsCount,
+    uint256 _totalPaid
+) external returns (uint256)
+```
+
+**Requirements:**
+- Only callable by BillPayment contract
+- User must be eligible for reward
+
+#### `claimReward()`
+Claims available NFT reward for user.
+
+```solidity
+function claimReward(address _user) external returns (uint256)
+```
+
+#### `upgradeNFTTier()`
+Upgrades existing NFT to higher tier.
+
+```solidity
+function upgradeNFTTier(uint256 _tokenId) external
+```
+
+### Reward Tiers
+
+| Tier | Minimum Payments | Minimum Amount |
+|------|------------------|----------------|
+| Bronze | 1-4 | Any |
+| Silver | 5-9 | $250+ |
+| Gold | 10-19 | $500+ |
+| Platinum | 20-49 | $1,000+ |
+| Diamond | 50+ | $2,500+ |
+
+### View Functions
+
+#### `getRewardTier()`
+Calculates reward tier based on payment history.
+
+```solidity
+function getRewardTier(
+    uint256 _paymentsCount,
+    uint256 _totalPaid
+) external pure returns (RewardTier)
+```
+
+#### `getUserNFTs()`
+Returns NFT token IDs owned by user.
+
+```solidity
+function getUserNFTs(address _user) external view returns (uint256[] memory)
+```
+
+## BillPool Contract
+
+### Data Structures
+
+```solidity
+enum PoolStatus { Active, Completed, Cancelled }
+
+struct Pool {
+    uint256 id;
+    address creator;
+    string description;
+    uint256 targetAmount;
+    uint256 currentAmount;
+    uint256 deadline;
+    uint256 minContribution;
+    uint256 maxContribution;
+    PoolStatus status;
+    address[] contributors;
+    uint256 createdAt;
+}
+```
+
+### Core Functions
+
+#### `createPool()`
+Creates a new bill pool for shared payments.
+
+```solidity
+function createPool(
+    string calldata _description,
+    uint256 _targetAmount,
+    uint256 _deadline,
+    uint256 _minContribution,
+    uint256 _maxContribution
+) external returns (uint256)
+```
+
+#### `contributeToPool()`
+Contributes funds to an existing pool.
+
+```solidity
+function contributeToPool(uint256 _poolId, uint256 _amount) external
+```
+
+**Requirements:**
+- Pool must be active
+- Contribution within min/max limits
+- Would not exceed target amount
+
+#### `completePool()`
+Completes pool and transfers funds to payee.
+
+```solidity
+function completePool(uint256 _poolId, address _payee) external
+```
+
+**Requirements:**
+- Only creator can complete pool
+- Pool must be fully funded
+- Pool must be active
+
+## Events Reference
+
+### BillPayment Events
+
+```solidity
+event BillCreated(uint256 indexed billId, address indexed payer, address indexed payee, uint256 amount);
+event PaymentMade(uint256 indexed billId, address indexed payer, uint256 amount, uint256 timestamp);
+event EscrowReleased(uint256 indexed billId, address indexed payee, uint256 amount);
+event BillCancelled(uint256 indexed billId, address indexed payer);
+event AutoPayToggled(uint256 indexed billId, bool enabled);
+```
+
+### NFTRewards Events
+
+```solidity
+event NFTMinted(uint256 indexed tokenId, address indexed recipient, RewardTier tier, uint256 paymentsCount);
+event TierUpgraded(uint256 indexed tokenId, RewardTier oldTier, RewardTier newTier);
+event RewardClaimed(address indexed user, uint256 indexed tokenId, RewardTier tier);
+```
+
+### BillPool Events
+
+```solidity
+event PoolCreated(uint256 indexed poolId, address indexed creator, uint256 targetAmount, uint256 deadline);
+event ContributionMade(uint256 indexed poolId, address indexed contributor, uint256 amount);
+event PoolCompleted(uint256 indexed poolId, uint256 totalAmount);
+event PoolCancelled(uint256 indexed poolId, address indexed creator);
+```
+
+## Error Codes
+
+### Common Errors
+- `"Invalid amount"`: Payment amount is zero or invalid
+- `"Insufficient balance"`: User doesn't have enough tokens
+- `"Not authorized"`: User not authorized for action
+- `"Bill not found"`: Invalid bill ID
+- `"Already paid"`: Bill already paid
+
+### Access Control
+- `"Ownable: caller is not the owner"`: Only owner can perform action
+- `"Pausable: paused"`: Contract is paused
+- `"Only bill payment contract"`: Only BillPayment can call function
+
+## Integration Examples
+
+### Frontend Integration
+
+```javascript
+// Connect to contract
+const billPayment = new ethers.Contract(
+    BILL_PAYMENT_ADDRESS,
+    BillPaymentABI,
+    signer
+);
+
+// Create a bill
+const tx = await billPayment.createBill(
+    payeeAddress,
+    ethers.utils.parseUnits("100", 6), // 100 USDC
+    Math.floor(Date.now() / 1000) + (30 * 24 * 60 * 60), // 30 days from now
+    0, // Not recurring
+    0, // One-time payment
+    "Electricity Bill - March",
+    false // No auto-pay
+);
+
+// Pay a bill
+await usdc.approve(billPayment.address, amount);
+await billPayment.payBill(billId);
+```
+
+### Event Listening
+
+```javascript
+// Listen for new bills
+billPayment.on("BillCreated", (billId, payer, payee, amount, event) => {
+    console.log(`New bill ${billId} created for ${ethers.utils.formatUnits(amount, 6)} USDC`);
+});
+
+// Listen for payments
+billPayment.on("PaymentMade", (billId, payer, amount, timestamp, event) => {
+    console.log(`Bill ${billId} paid: ${ethers.utils.formatUnits(amount, 6)} USDC`);
+});
+```
+
+## Gas Costs (Estimated)
+
+| Function            | Gas Cost |
+|----------           |----------|
+| createBill()        | ~150,000 |
+| payBill()           | ~200,000 |
+| releaseEscrow()     | ~80,000  |
+| createPool()        | ~180,000 |
+| contributeToPool()  | ~120,000 |
+| mintRewardNFT()     | ~250,000 |
+
+## Security Considerations
+
+1. **Reentrancy Protection**: All state-changing functions use ReentrancyGuard
+2. **Access Control**: Proper role-based permissions
+3. **Pausable**: Emergency pause functionality
+4. **Input Validation**: All inputs validated
+5. **Integer Overflow**: SafeMath protection (Solidity 0.8+)
+6. **Front-running**: Consider using commit-reveal for sensitive operations
+
+## Testing
+
+Run comprehensive tests:
+```bash
+npm test
+npm run test:coverage
+```
+
+Generate gas report:
+```bash
+npm run gas
+```

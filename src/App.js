@@ -1,18 +1,18 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { Web3Provider } from './context/Web3Context';
-import { AIProvider } from './context/AIContext';
-import Header from './components/Layout/Header';
-import Sidebar from './components/Layout/Sidebar';
-import Footer from './components/Layout/Footer';
-import WalletConnect from './components/WalletConnect';
-import Dashboard from './components/Dashboard';
-import BillManagement from './components/Form/BillManagement';
-import AIAssistant from './components/AIAssistant';
-import NFTRewards from './components/NFTRewards';
-import BillPools from './components/BillPools';
-import Landing from './pages/Landing';
-import { useWeb3 } from './context/Web3Context';
+import { Web3Provider } from './context/Web3Context.js';
+import { AIProvider } from './context/AIContext.js';
+import Header from './components/Layout/Header.js';
+import Sidebar from './components/Layout/Sidebar.js';
+import Footer from './components/Layout/Footer.js';
+import WalletConnect from './components/WalletConnect.js';
+import Dashboard from './components/Dashboard.js';
+import BillManagement from './components/Form/BillManagement.js';
+import AIAssistant from './components/AIAssistant.js';
+import NFTRewards from './components/NFTRewards.js';
+import BillPools from './components/BillPools.js';
+import Landing from './pages/Landing.js';
+import { useWeb3 } from './context/Web3Context.js';
 import './App.css';
 
 const AppContent = () => {

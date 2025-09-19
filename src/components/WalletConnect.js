@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useWeb3 } from '../context/Web3Context';
+import { useWeb3 } from '../context/Web3Context.js';
 
 const WalletConnect = () => {
   const { connectWallet, connecting, error } = useWeb3();
@@ -22,8 +22,8 @@ const WalletConnect = () => {
         <div className="connect-card">
           <div className="logo-section">
             <div className="logo-circle">
-              <span className="logo-text">💸</span>
-            </div>
+             <img src="/logo192.png" alt="FEEEZ Logo" className="wallet-logo" />
+        </div>
             <h1 className="app-name">FEEEZ</h1>
             <p className="tagline">Bills Paid. Fees Gone.</p>
           </div>

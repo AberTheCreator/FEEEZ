@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { useWeb3 } from '../context/Web3Context';
-import { contractService } from '../services/contractService';
+import { useWeb3 } from '../../context/Web3Context.js';
+import contractService from '../../services/contractService.js';
 
 const useContract = (contractName) => {
   const { provider, signer, account } = useWeb3();

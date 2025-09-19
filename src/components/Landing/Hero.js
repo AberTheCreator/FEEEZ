@@ -38,13 +38,16 @@ const Hero = ({ onGetStarted }) => {
       </div>
 
       <div className="hero-container">
-        <div className="hero-content">
-          <div className="hero-text">
-            <h1 className="hero-title">
-              <span className="title-brand">FEEEZ 💸</span>
-              <span className="title-tagline">{typedText}</span>
-              <span className="cursor">|</span>
-            </h1>
+  <div className="hero-content">
+    <div className="hero-text">
+      <h1 className="hero-title">
+        <span className="title-brand">
+          <img src="/logo192.png" alt="FEEEZ Logo" className="hero-logo" />
+          FEEEZ 
+        </span>
+        <span className="title-tagline">{typedText}</span>
+        <span className="cursor">|</span>
+      </h1>
             
             <p className="hero-subtitle">
               Decentralized bill payments with AI insights, NFT rewards, and shared expenses. 

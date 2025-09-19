@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { useWeb3 } from '../context/Web3Context';
-import { useAI } from '../context/AIContext';
-import aiService from '../services/aiService';
+import { useWeb3 } from '../context/Web3Context.js';
+import { useAI } from '../context/AIContext.js';
+import aiService from '../services/aiService.js';
 import './AIAssistant.css';
 
 const AIAssistant = () => {

@@ -1,4 +1,4 @@
-
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
@@ -58,12 +58,16 @@ contract BillPayment is ReentrancyGuard, Ownable {
     event EscrowDeposit(address indexed token, address indexed user, uint256 amount);
     event EscrowWithdraw(address indexed token, address indexed user, uint256 amount);
     
-    constructor(address _initialOwner, address _feeCollector) Ownable(_initialOwner) {
-        require(_feeCollector != address(0), "Invalid fee collector");
-        feeCollector = _feeCollector;
-        _billIdCounter = 0;
-        _paymentIdCounter = 0;
-    }
+    constructor(address _initialOwner, address _feeCollector) {
+    require(_initialOwner != address(0), "Invalid owner");
+    require(_feeCollector != address(0), "Invalid fee collector");
+
+    _transferOwnership(_initialOwner); 
+    feeCollector = _feeCollector;
+
+    _billIdCounter = 0;
+    _paymentIdCounter = 0;
+}
     
     function createBill(
         address _payee,
@@ -80,7 +84,7 @@ contract BillPayment is ReentrancyGuard, Ownable {
         require(_amount > 0, "Amount must be greater than 0");
         require(_frequency > 0, "Frequency must be greater than 0");
         require(_totalPayments > 0, "Total payments must be greater than 0");
-        require(_totalPayments <= 1000, "Too many payments"); // Reasonable limit
+        require(_totalPayments <= 1000, "Too many payments"); 
         
         _billIdCounter++;
         uint256 billId = _billIdCounter;

@@ -15,11 +15,11 @@ const Navbar = ({ scrolled, onGetStarted, scrollToSection }) => {
   return (
     <nav className={`landing-navbar ${scrolled ? 'scrolled' : ''}`}>
       <div className="navbar-container">
+        </div>
         <div className="navbar-brand">
           <div className="brand-logo">
-            <span className="brand-icon">💸</span>
-            <span className="brand-text">FEEEZ</span>
-          </div>
+           <img src="/logo192.png" alt="FEEEZ Logo" className="brand-logo-img" />
+               <span className="brand-text">FEEEZ</span>
         </div>
 
         <div className={`navbar-menu ${mobileMenuOpen ? 'mobile-open' : ''}`}>

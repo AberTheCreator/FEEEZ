@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button, Input, Select } from '../UI/Button';
+import { Button, Input, Select } from '../UI/Button.js';
 
 const BillForm = ({ onSubmit, onCancel, initialData = null }) => {
   const [formData, setFormData] = useState({

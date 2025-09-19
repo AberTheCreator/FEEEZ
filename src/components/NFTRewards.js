@@ -1,5 +1,5 @@
 import React from 'react';
-import useNFTRewards from './hooks/useNFTRewards';
+import useNFTRewards from './hooks/useNFTRewards.js';
 
 const NFTRewards = () => {
   const { 

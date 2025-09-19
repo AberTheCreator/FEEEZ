@@ -1,0 +1,87 @@
+{
+  "name": "feeez-contracts",
+  "version": "1.0.0",
+  "description": "FEEEZ - Bills Paid. Fees Gone. Smart contracts for automated bill payments.",
+  "main": "index.js",
+
+  "scripts": {
+    "compile": "npx hardhat compile",
+    "test": "npx hardhat test",
+    "node": "npx hardhat node",
+    "deploy": "npx hardhat run scripts/deploy.js",
+    "deploy:testnet": "npx hardhat run scripts/deploy.js --network somnia_testnet",
+    "deploy:mainnet": "npx hardhat run scripts/deploy.js --network somnia_mainnet",
+    "deploy:local": "npx hardhat run scripts/deploy.js --network localhost",
+    "verify": "npx hardhat verify",
+    "coverage": "npx hardhat coverage",
+    "size": "npx hardhat size-contracts",
+    "clean": "npx hardhat clean",
+    "setup-demo": "npx hardhat run scripts/setup/MockData.js --network localhost",
+    "verify-contracts": "npx hardhat run scripts/verifyContracts.js"
+
+  },
+
+  "keywords": [
+
+    "defi",
+
+    "bills",
+
+    "payments",
+
+    "crypto",
+
+    "somnia",
+
+    "nft",
+
+    "ai"
+
+  ],
+
+  "author": "FEEEZ Team",
+
+  "license": "MIT",
+
+  "devDependencies": {
+
+    "@nomicfoundation/hardhat-network-helpers": "^1.0.0",
+
+    "@nomicfoundation/hardhat-toolbox": "^2.0.2",
+
+    "@nomiclabs/hardhat-ethers": "^2.2.3",
+
+    "@nomiclabs/hardhat-etherscan": "^3.1.7",
+
+    "@openzeppelin/contracts": "^5.4.0",
+
+    "@openzeppelin/hardhat-upgrades": "^1.28.0",
+
+    "@typechain/ethers-v5": "^10.1.0",
+
+    "@typechain/hardhat": "^6.1.2",
+
+    "chai": "^4.3.6",
+
+    "hardhat": "^2.26.3",
+
+    "hardhat-gas-reporter": "^1.0.9",
+
+    "solidity-coverage": "^0.8.4",
+
+    "typechain": "^8.1.0"
+
+  },
+
+  "dependencies": {
+
+    "@openzeppelin/contracts-upgradeable": "^4.9.3",
+
+    "dotenv": "^16.3.1",
+
+    "ethers": "^5.7.2"
+
+  }
+
+}
+

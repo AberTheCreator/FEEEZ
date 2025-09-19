@@ -7,7 +7,7 @@ const LandingFooter = () => {
         <div className="footer-content">
           <div className="footer-brand">
             <div className="brand-logo">
-              <span className="brand-icon">💸</span>
+             <img src="/logo192.png" alt="FEEEZ Logo" className="footer-logo" />
               <span className="brand-text">FEEEZ</span>
             </div>
             <p>Decentralized bill payments with AI insights</p>
